@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Clone Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/vishnukumar-vv/k8s_singlepod.git'
+            }
+        }
+
+        stage('Check Cluster') {
+            steps {
+                sh 'kubectl get nodes'
+            }
+        }
+
+        stage('Validate YAML') {
+            steps {
+                sh 'kubectl apply --dry-run=client -f pod.yaml'
+            }
+        }
+
+        stage('Deploy Pod') {
+            steps {
+                sh 'kubectl apply -f pod.yaml'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh 'kubectl get pods -o wide'
+            }
+        }
+    }
+}
