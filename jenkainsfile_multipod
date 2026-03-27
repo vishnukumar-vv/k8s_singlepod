@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Clone Repo') {
+            steps {
+                git 'https://github.com/vishnukumar-vv/k8s_singlepod.git'
+            }
+        }
+
+        stage('Check Cluster') {
+            steps {
+                sh 'kubectl get nodes'
+            }
+        }
+
+        stage('Deploy Multi Pod') {
+            steps {
+                sh 'kubectl apply -f multi-pod.yaml'
+            }
+        }
+
+        stage('Verify Pod') {
+            steps {
+                sh 'kubectl get pods -n pd'
+            }
+        }
+
+        stage('Check Logs (Sidecar)') {
+            steps {
+                sh 'kubectl logs multi-container-logs -c log-sidecar -n pd --tail=5'
+            }
+        }
+    }
+}
