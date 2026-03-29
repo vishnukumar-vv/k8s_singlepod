@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shared-volume-pod
+spec:
+  volumes:
+  - name: shared-data
+    emptyDir: {}
+
+  containers:
+  - name: nginx-container
+    image: nginx
+    volumeMounts:
+    - name: shared-data
+      mountPath: /usr/share/nginx/html
+
+  - name: busybox-container
+    image: busybox
+    command: ["sh","-c","echo Hello from BusyBox > /shared/index.html && sleep 3600"]
+    volumeMounts:
+    - name: shared-data
+      mountPath: /shared
