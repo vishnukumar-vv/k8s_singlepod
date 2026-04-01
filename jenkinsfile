@@ -17,13 +17,18 @@ pipeline {
 
         stage('Validate YAML') {
             steps {
-                sh 'kubectl apply --dry-run=client -f pod.yaml'
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh 'kubectl apply --dry-run=client -f pod.yaml'
+                }
             }
         }
 
         stage('Deploy Pod') {
             steps {
-                sh 'kubectl apply -f pod.yaml'
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh 'kubectl apply -f pod.yaml'
+                    sh 'kubectl wait --for=condition=ready pod -l app=nginx --timeout=60s'
+                }
             }
         }
 

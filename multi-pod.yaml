@@ -12,7 +12,8 @@ spec:
 
   # 🔹 Main Container (Generates Logs with Date)
   - name: app-container
-    image: alpine
+    image: alpine:3.18
+    imagePullPolicy: IfNotPresent
     command: ["/bin/sh", "-c"]
     args:
       - while true; do
@@ -25,7 +26,8 @@ spec:
 
   # 🔹 Sidecar (Reads Logs)
   - name: log-sidecar
-    image: alpine
+    image: alpine:3.18
+    imagePullPolicy: IfNotPresent
     command: ["/bin/sh", "-c"]
     args:
       - tail -f /var/log/app.log

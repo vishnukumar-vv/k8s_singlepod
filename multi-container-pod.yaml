@@ -9,13 +9,22 @@ spec:
 
   containers:
   - name: nginx-container
-    image: nginx
+    image: nginx:1.25
+    imagePullPolicy: IfNotPresent
     volumeMounts:
     - name: shared-data
       mountPath: /usr/share/nginx/html
 
   - name: busybox-container
-    image: busybox
+    image: busybox:1.36
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "200m"
+        memory: "128Mi"
     command: ["sh","-c","echo Hello from BusyBox > /shared/index.html && sleep 3600"]
     volumeMounts:
     - name: shared-data

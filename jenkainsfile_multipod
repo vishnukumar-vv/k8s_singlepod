@@ -5,25 +5,34 @@ pipeline {
 
         stage('Check Cluster') {
             steps {
-                sh 'kubectl get nodes'
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh 'kubectl get nodes'
+                }
             }
         }
 
         stage('Deploy Multi Pod') {
             steps {
-                sh 'kubectl apply -f multi-pod.yaml'
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh 'kubectl apply -f multi-pod.yaml'
+                    sh 'kubectl wait --for=condition=ready pod/multi-container-logs -n pd --timeout=60s'
+                }
             }
         }
 
         stage('Verify Pod') {
             steps {
-                sh 'kubectl get pods -n pd'
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh 'kubectl get pods -n pd'
+                }
             }
         }
 
         stage('Check Logs') {
             steps {
-                sh 'kubectl logs multi-container-logs -c log-sidecar -n pd --tail=5'
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh 'kubectl logs multi-container-logs -c log-sidecar -n pd --tail=5'
+                }
             }
         }
     }
